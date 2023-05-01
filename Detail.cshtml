@@ -1,0 +1,421 @@
+﻿@using NavesPortalforWebWithCoreMvc.Common;
+@using Syncfusion.EJ2
+@using Syncfusion.EJ2.Notifications;
+@model NavesPortalforWebWithCoreMvc.Models.TNAV_NSN_MANAGEMENT
+
+@{
+    ViewBag.PageTitle = "PMS > Porject ID Management";
+    ViewBag.PlatformName = "PMS";
+    ViewBag.MenuName = "NSN Management";
+    ViewBag.FunctionName = "Detail";
+}
+
+@section ContentsSection{
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="ps-2 pageContentTitle">
+            <h3>@ViewBag.MenuName</h3>
+        </div>
+        <div></div>
+    </div>
+
+    <form id="frmNsnManagement" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">NSN ID</label>
+            <div class="col-sm-4">
+                <h4>
+                    <span class="fw-bold">@Model.NSN_ID</span>
+                </h4>
+                <ejs-textbox type="text" id="txtNSNId" ejs-for="NSN_ID" cssClass="d-none"></ejs-textbox>
+                <input type="hidden" asp-for="NSN_IDX" />
+            </div>
+        </div>
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Client</label>
+            <div class="col-sm-4">
+                <ejs-dropdownlist id="dlClient" ejs-for="CLIENT" placeholder="Select Client..." popupHeight="220px" cssClass="inputable">
+                    <e-data-manager url="/PmsNsnManagement/CommonDdlValue/Client" adaptor="WebApiAdaptor"></e-data-manager>
+                    <e-dropdownlist-fields text="Name" value="Value"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Type</label>
+            <div class="col-sm-4">
+                <ejs-dropdownlist id="dlShipType" ejs-for="VESSEL_TYPE" placeholder="Select Type..." popupHeight="220px" cssClass="inputable">
+                    <e-data-manager url="/PmsNsnManagement/CommonDdlValue/VesselType" adaptor="WebApiAdaptor"></e-data-manager>
+                    <e-dropdownlist-fields text="Name" value="Value"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Category</label>
+            <div class="col-sm pe-0">
+                <ejs-dropdownlist id="ddlFirstVesselCategory" ejs-for="VESSEL_CATEGORY_1" placeholder="Select 1st Category..." popupHeight="220px" popupWidth="500px"
+                              change="FirstVesselCategoryOnChange"
+                              popupHeight="@ViewBag.popupHeight"
+                              dataSource="@ViewBag.FirstCate"
+                              value="@ViewBag.SetValue"
+                              cssClass="inputable">
+                    <e-dropdownlist-fields text="CODE_EXPLAIN" value="IDX"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+            <div class="col-sm pe-0">
+                <ejs-dropdownlist id="ddlSndVesselCategory" ejs-for="VESSEL_CATEGORY_2" placeholder="Select 2nd Category..." popupHeight="220px" popupWidth="500px"
+                              change="SecondVesselCategoryOnChange"
+                              popupHeight="@ViewBag.popupHeight"
+                              dataSource="@ViewBag.SecondCate"
+                              created="ddlCreatedCategory2"
+                              cssClass="inputable">
+                    <e-dropdownlist-fields text="CODE_EXPLAIN" value="IDX"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+            <div class="col-sm pe-0">
+                <ejs-dropdownlist id="ddlThirdVesselCategory" ejs-for="VESSEL_CATEGORY_3" placeholder="Select 3rd Category..." popupHeight="220px" popupWidth="500px"
+                              change="ThirdVesselCategoryOnChange"
+                              popupHeight="@ViewBag.popupHeight"
+                              dataSource="@ViewBag.ThirdCate"
+                              created="ddlCreatedCategory3"
+                              cssClass="inputable">
+                    <e-dropdownlist-fields text="CODE_EXPLAIN" value="IDX"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+            <div class="col-sm">
+                <ejs-dropdownlist id="ddlForthVesselCategory" ejs-for="VESSEL_CATEGORY_4" placeholder="Select 4th Category..." popupHeight="220px" popupWidth="500px"
+                              popupHeight="@ViewBag.popupHeight"
+                              dataSource="@ViewBag.ForthCate"
+                              created="ddlCreatedCategory4"
+                              cssClass="inputable">
+                    <e-dropdownlist-fields text="CODE_EXPLAIN" value="IDX"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function FirstVesselCategoryOnChange() {
+                var ddlFirstCategory = document.getElementById('ddlFirstVesselCategory').ej2_instances[0];
+                var ddlSndCategory = document.getElementById('ddlSndVesselCategory').ej2_instances[0];
+                ddlSndCategory.enabled = true;
+
+                var tempQuery = new ej.data.Query().where('UPPER_IDX', 'equal', ddlFirstCategory.value);
+                ddlSndCategory.query = tempQuery;
+                ddlSndCategory.text = null;
+                ddlSndCategory.dataBind();
+            }
+
+            function SecondVesselCategoryOnChange() {
+                var ddlSndVesselCategory = document.getElementById('ddlSndVesselCategory').ej2_instances[0];
+                var ddlThirdVesselCategory = document.getElementById('ddlThirdVesselCategory').ej2_instances[0];
+                ddlThirdVesselCategory.enabled = true;
+
+                var tempQuery = new ej.data.Query().where('UPPER_IDX', 'equal', ddlSndVesselCategory.value);
+                ddlThirdVesselCategory.query = tempQuery;
+                ddlThirdVesselCategory.text = null;
+                ddlThirdVesselCategory.dataBind();
+            }
+
+            function ThirdVesselCategoryOnChange() {
+                var ddlThirdVesselCategory = document.getElementById('ddlThirdVesselCategory').ej2_instances[0];
+                var ddlForthVesselCategory = document.getElementById('ddlForthVesselCategory').ej2_instances[0];
+                ddlForthVesselCategory.enabled = true;
+
+                var tempQuery = new ej.data.Query().where('UPPER_IDX', 'equal', ddlThirdVesselCategory.value);
+                ddlForthVesselCategory.query = tempQuery;
+                ddlForthVesselCategory.text = null;
+                ddlForthVesselCategory.dataBind();
+            }
+
+            function ddlCreatedCategory2() {
+                var ddlSndVesselCategory = document.getElementById('ddlSndVesselCategory').ej2_instances[0];
+                if (ddlSndVesselCategory.value == null) {
+                    ddlSndVesselCategory.enabled = false;
+                }
+            }
+
+            function ddlCreatedCategory3() {
+                var ddlThirdVesselCategory = document.getElementById('ddlThirdVesselCategory').ej2_instances[0];
+                if (ddlThirdVesselCategory.value == null) {
+                    ddlThirdVesselCategory.enabled = false;
+                }
+            }
+
+            function ddlCreatedCategory4() {
+                var ddlForthVesselCategory = document.getElementById('ddlForthVesselCategory').ej2_instances[0];
+                if (ddlForthVesselCategory.value == null) {
+                    ddlForthVesselCategory.enabled = false;
+                }
+            }
+
+        </script>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Name(Korean)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtShipNameKR" ejs-for="VESSEL_NAME_KR" cssClass="e-outline text-left create-inputable inputable" placeholder="Name..."></ejs-textbox>
+            </div>
+            <label for="Client" class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Name(English)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtShipNameEN" ejs-for="VESSEL_NAME_EN" cssClass="e-outline text-left create-inputable inputable" placeholder="Name..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Hull No. for Job Id</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtHullNo" ejs-for="HULL_NO" cssClass="e-outline text-left inputable" placeholder="Hull No. for JOB-ID..."></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Hull No. by Shipyard</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtShipNo" ejs-for="SHIP_NO" cssClass="e-outline text-left inputable" placeholder="Hyll No. by Shipyard..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Yard/Maker</label>
+            <div class="col-sm-4">
+                <ejs-dropdownlist id="ddlYardAndMaker" ejs-for="YARD_MAKER" dataSource="@ViewBag.YardMaker" placeholder="Yard/Maker..." popupHeight="220px" cssClass="inputable"
+                              filterBarPlaceholder="Search" allowFiltering="true" filtering="onfiltering" change="onChange"
+                              query="new ej.data.Query().from('ddlYardAndMaker').select(['CLINAME', 'CLIID'])">
+                    <e-dropdownlist-fields text="CLINAME" value="CLIID"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+                <script>
+                    function onfiltering(e) {
+                        var CBObj = document.getElementById("ddlYardAndMaker").ej2_instances[0];
+                        if (e.text == '' && e.text.length < 3) {
+                            e.updateData(CBObj.dataSource);
+                        }
+                        let query = new ej.data.Query().from('ddlYardAndMaker').select(['name', 'value']);
+                        query = (e.text !== '' && e.text.length >= 3) ? query.where('name', 'contains', e.text, true) : query;
+                        e.updateData(CBObj.dataSource, query);
+                    }
+
+                    function onChange(e) {
+                        var txtYardMaker = document.getElementById("txtYardMaker").ej2_instances[0];
+                        $("#txtYardMaker").val(e.itemData.name);
+                    }
+                </script>
+                <ejs-textbox type="text" id="txtYardMaker" ejs-for="YARD_MAKER_NAME" cssClass="e-outline text-left inputable d-none"></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Ship No.</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtVesselNo" ejs-for="VESSEL_NO" cssClass="e-outline text-left inputable" placeholder="Ship No..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Job ID</label>
+            <div class="col-sm-10 py-1">
+                <ejs-listbox id="listbox"
+                         itemTemplate="@Html.Raw("<div class=\"border-bottom pt-1\" style=\"height: 38px;\"><div class=\"d-inline fw-bold px-2 border-end\">${no}</div><div class=\"d-inline ps-2\">${job_id}</div></div>")">
+                    <e-data-manager url="@Url.Action("GetJobIdListInNsn", "PmsNsnManagement", new {id = @Model.NSN_IDX})" adaptor="ODataAdaptor" crossDomain="true"></e-data-manager>
+                    <e-listbox-fields text="job_id" value="job_idx"></e-listbox-fields>
+                </ejs-listbox>
+                <script>
+                    function OpenJobId(jobId) {
+                        alert(jobId);
+                    }
+                </script>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 mt-3 row bprder border-bottom bg-create-title">
+            <label class="col-sm-12 col-form-label text-center fw-bolder">Vessel Particular</label>
+        </div>
+
+        <div class="align-items-center mx-0 row border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Full Load Displacement (ton)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtTonnage" ejs-for="FULL_LOAD_DISPLACEMENT" cssClass="e-outline text-left inputable" placeholder="Full load displacement tonnage..."></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Overrall Length(m)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtOverrallLength" ejs-for="OVERALL_LENGTH" cssClass="e-outline text-left inputable" placeholder="Overrall Length..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Displacement (ton)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtTonnage2" ejs-for="DISPLACEMENT" cssClass="e-outline text-left inputable" placeholder="Displacement tonnage..."></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Breadth(m)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtBreadth" ejs-for="BREADTH" cssClass="e-outline text-left inputable" placeholder="Breadth..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Light (ton)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtTonnage3" ejs-for="LIGHT" cssClass="e-outline text-left inputable" placeholder="Light tonnage..."></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Depth(m)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtDepth" ejs-for="DEPTH" cssClass="e-outline text-left inputable" placeholder="Depth..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Speed(knots)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtSpeed" ejs-for="SPEED" cssClass="e-outline text-left inputable" placeholder="Speed..."></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Draft(m)</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="txtDraft" ejs-for="DRAFT" cssClass="e-outline text-left inputable" placeholder="Draft..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Hull Material</label>
+            <div class="col-sm-4">
+                <ejs-textbox type="text" id="dpHullMaterial" ejs-for="HULL_MATERIAL" cssClass="e-outline text-left inputable" placeholder="Hull Material..."></ejs-textbox>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Contract Date</label>
+            <div class="col-sm-4">
+                <ejs-datepicker id="dpContractDate" ejs-for="CONTRACT_DATE" format="yyyy-MM-dd" placeholder="Contract Date..." cssClass="inputable"></ejs-datepicker>
+            </div>
+            <label for="Client" class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Keel Laid Date</label>
+            <div class="col-sm-4">
+                <ejs-datepicker id="dpKeelLaid" ejs-for="KEEL_LAIED_DATE" format="yyyy-MM-dd" placeholder="Keel Laid Date..." cssClass="inputable"></ejs-datepicker>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label for="Client" class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Delivery Date</label>
+            <div class="col-sm-4">
+                <ejs-datepicker id="dpDeliveryDate" ejs-for="DELIVERY_DATE" format="yyyy-MM-dd" placeholder="Delivery Date..." cssClass="inputable" required></ejs-datepicker>
+            </div>
+        </div>
+
+        <div class="mx-0 row bprder border-bottom">
+            <div class="col-sm-2 text-end fw-bolder bg-create-title pt-1" style="min-height:200px;">Remark</div>
+            <div class="col-sm-10 py-1">
+                <ejs-richtexteditor id="rteRemark" height="196" ejs-for="REMARK" enableResize="true" placeholder="Remark...">
+                    <e-richtexteditor-toolbarsettings type="Expand" enableFloating="false" items="@CommonSettingData.getBasicRichTextEditorItemLists()"></e-richtexteditor-toolbarsettings>
+                </ejs-richtexteditor>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Creation User</label>
+            <div class="col-sm-4">
+                <span class="fw-bold">@Model.CREATE_USER_NAME</span>
+                <ejs-textbox type="text" id="txtCreatUser" ejs-for="CREATE_USER_NAME" cssClass="d-none"></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Registration Date</label>
+            <div class="col-sm-4">
+                <span>@Model.REG_DATE.ToShortDateString() @Model.REG_DATE.ToShortTimeString()</span>
+                <ejs-datepicker id="txtRegDate" ejs-for="REG_DATE" format="yyyy-MM-dd" cssClass="d-none"></ejs-datepicker>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Modification User</label>
+            <div class="col-sm-4">
+                <span class="fw-bolder">@Model.MODIFY_USER_NAME</span>
+                <ejs-textbox type="text" id="txtModifyUser" ejs-for="MODIFY_USER_NAME" cssClass="d-none"></ejs-textbox>
+            </div>
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Modification Date</label>
+            <div class="col-sm-4">
+                <span>@Model.MODIFY_DATE?.ToShortDateString() @Model.MODIFY_DATE?.ToShortTimeString()</span>
+                <ejs-datepicker id="txtModifyDate" ejs-for="MODIFY_DATE" format="yyyy-MM-dd" cssClass="d-none"></ejs-datepicker>
+            </div>
+        </div>
+    </form>
+
+    <div class="pt-2 me-4 ms-3">
+        <div class="float-start row g-0">
+            <div class="col-auto pe-2">
+                <a id="btnShowLog" class="btn btn-success btn-medium rounded-pill waves-effect waves-light" style="width:120px;" onclick="ShowLogList">Show Log</a>
+            </div>
+            <div class="col-auto pe-2">
+            </div>
+            <div class="col-auto">
+            </div>
+        </div>
+        <div class="float-end row g-0">
+            <div class="col-auto pe-2">
+                <input type="button" id="btnEdit" value="SAVE" class="btn btn-primary btn-medium rounded-pill waves-effect waves-light" />
+            </div>
+            <div class="col-auto pe-2">
+                <a asp-controller="PmsNsnManagement" asp-action="Index" id="btnList" class="btn btn-primary btn-medium rounded-pill waves-effect waves-light">LIST</a>
+            </div>
+            <div class="col-auto">
+                <form id="frmNsnIdx" method="post">
+                    <input type="hidden" id="hdnValue" asp-for="NSN_IDX" name="NSN_IDX" />
+                    <input type="button" id="btnDelete" value="DELETE" class="btn btn-danger btn-medium rounded-pill waves-effect waves-light" />
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+    @section Scripts{
+    <script>
+        // Delete
+        $("#btnDelete").click(function () {
+            if (confirm("삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/PmsNsnManagement/Delete",
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "json",
+                    type: "post",
+                    data: $("#frmNsnIdx").serialize(),
+                    //data: $("#hdnValue").val(),
+                    success: function (data) {
+                        if ("OK" == data) {
+                            window.location.href = "/PmsNsnManagement";
+                        } else {
+                            alert(data);
+                        }
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+        });
+
+        // Edit
+        $("#btnEdit").click(function () {
+            if (confirm("수정하시겠습니까?")) {
+                $.ajax({
+                    url: "/PmsNsnManagement/Edit",
+                    contentType: "application/x-www-form-urlencoded",
+                    dataType: "json",
+                    type: "post",
+                    data: $("#frmNsnManagement").serialize(),
+                    success: function (data) {
+                        if ("OK" == data) {
+                            alert("수정되었습니다.");
+                            window.location.href = "/PmsNsnManagement/Detail/" + '@Model.NSN_IDX';
+                        } else {
+                            alert(data);
+                        }
+                    },
+                    error: function (data) {
+                        alert("Error");
+                        alert(data);
+                    }
+                });
+            }
+        });
+
+        // Show Log Button
+        $("#btnShowLog").click(function () {
+            var W = (screen.availWidth * 0.5);
+            var H = (screen.availHeight * 0.5);
+
+            var popupX = (screen.availWidth / 2) - (W / 2);
+            var popupY = (screen.availHeight / 2) - (H / 2);
+
+            var opt = "status=no,width=" + W + "px, height=" + H + "px, left=" + popupX + ", top=" + popupY + ",scrollbars=yes";
+            var popup = window.open('@Url.Action("ShowLog", "Common", new{id = Model.NSN_IDX, platform = "PMS"})', 'LogList', opt);
+
+            popup.opener = window;
+            popup.focus();
+        });
+    </script>
+}        

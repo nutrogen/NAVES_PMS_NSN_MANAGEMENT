@@ -1,0 +1,140 @@
+﻿@using Syncfusion.EJ2
+@{
+    ViewBag.PageTitle = "PMS > NSN Management";
+    ViewBag.PlatformName = "PMS";
+    ViewBag.MenuName = "NSN Management";
+    ViewBag.FunctionName = "List";
+}
+
+@section SearchSection{
+    <div class="row align-items-center m-0">
+        <div class="col ps-0">
+            <ejs-textbox id="SearchString" name="SearchString" value="@ViewBag.SearchString" cssClass="e-outline inputable" placeholder="Vessel Name, Yard, Hull No, Shp No, Vessel No..."></ejs-textbox>
+        </div>
+        <div class="col-auto">
+            Period
+        </div>
+        <div class="col-2">
+            <ejs-datepicker id="StartDate" name="StartDate" value="@ViewBag.StartDate" value="@ViewBag.StartDate" format="yyyy-MM-dd" placeholder="Start Date..." cssClass="inputable"></ejs-datepicker>
+        </div>
+        <div class="col-2">
+            <ejs-datepicker id="EndDate" name="EndDate" value="@ViewBag.EndDate" value="@DateTime.Now.ToShortDateString()" format="yyyy-MM-dd" placeholder="End Date..." cssClass="inputable"></ejs-datepicker>
+        </div>
+        <div class="col">
+            <button id="Search" type="submit" class="btn btn-purple btn-medium rounded-pill waves-effect waves-light">Search</button>
+        </div>
+    </div>
+}
+
+    @section ContentsSection{
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="ps-2 pageContentTitle">
+            <h3>@ViewBag.MenuName</h3>
+        </div>
+        <div class="ps-1">
+            <a asp-controller="PmsNsnManagement" asp-action="Create" id="btnPrint" class="btn btn-info btn-custom rounded-pill waves-effect waves-light">New</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <ejs-grid id="Grid" recordClick="recordClick" dataBound="dataBound"
+                  height="510"
+                  allowMultiSorting="true"
+                  allowTextWrap="true"
+                  allowResizing="true"
+                  allowReordering="true"
+                  allowSorting="true"
+                  allowFiltering="true"
+                  allowExcelExport="true"
+                  allowPdfExport="true"
+                  allowGrouping="true"
+                  allowPaging="true"
+                  allowSelection="false"
+                  showColumnChooser="true"
+                  toolbar="@( new List<string>() { "ColumnChooser", "ExcelExport", "PdfExport", "CsvExport", "Print"})">
+                <e-grid-loadingIndicator indicatorType="Shimmer"></e-grid-loadingIndicator>
+                <e-data-manager url="@Url.Action("UrlDataSource", "PmsNsnManagement",  new {SearchString = "", StartDate = ViewBag.StartDate, EndDate = @DateTime.Now.ToShortDateString()} )" adaptor="UrlAdaptor" crossdomain="true"></e-data-manager>
+                <e-grid-filterSettings type="CheckBox"></e-grid-filterSettings>
+                <e-grid-pagesettings pageCount="10" pageSize="15" pageSizes="@(new string[] {"10", "15", "20" , "50", "All" })"></e-grid-pagesettings>
+                <e-grid-groupSettings enableLazyLoading="true" allowReordering="true" showDropArea="true"></e-grid-groupSettings>
+                <e-grid-columns>
+                    <e-grid-column field="NO" headerText="No" customAttributes=@(new{@class="customCss"}) width="80" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="NSN_ID" headerText="NSN ID" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                    <e-grid-column headerText="JOB ID" template="#JobIdTemplateforGrid" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_TYPE" headerText="Type" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_CATEGORY_CODE" headerText="Category" customAttributes=@(new{@class="customCss"})></e-grid-column>
+                    <e-grid-column field="VESSEL_NAME_KR" headerText="Name(KR)" customAttributes=@(new{@class="customCss"}) width="300"></e-grid-column>
+                    <e-grid-column field="VESSEL_NAME_EN" headerText="Name(EN)" customAttributes=@(new{@class="customCss"}) width="300"></e-grid-column>
+                    <e-grid-column field="VESSEL_NO" headerText="Ship No." customAttributes=@(new{@class="customCss"}) width="150" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="HULL_NO" headerText="Hull No." customAttributes=@(new{@class="customCss"}) width="150" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="YARD_MAKER_NAME" headerText="Yard/Maker" customAttributes=@(new{@class="customCss"}) width="150" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="CLIENT_NAME" headerText="Client" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_CATEGORY_1" headerText="Category Lv.1" customAttributes=@(new{@class="customCss"}) width="350" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_CATEGORY_2" headerText="Category Lv.2" customAttributes=@(new{@class="customCss"}) width="500" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_CATEGORY_3" headerText="Category Lv.3" customAttributes=@(new{@class="customCss"}) width="450" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="VESSEL_CATEGORY_4" headerText="Category Lv.4" customAttributes=@(new{@class="customCss"}) width="350" textAlign="Center"></e-grid-column>
+                    <e-grid-column field="DELIVERY_DATE" format="yyyy-MM-dd" headerText="Delivery Date" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                    <e-grid-column field="REG_DATE" format="yyyy-MM-dd" headerText="Registration Date" customAttributes=@(new{@class="customCss"}) textAlign="Center"></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+    <script id="JobIdTemplateforGrid" type="text/x-template">
+        <a href="#">
+            <div id="popupJobId" class="fw-bolder">
+                ${JOB_ID}
+            </div>
+        </a>
+    </script>
+
+    <script>
+        function recordClick(args) {
+            window.location.href = "/PmsNsnManagement/Detail/" + args.rowData.NSN_IDX;
+        }
+
+        function dataBound() {
+            var grid = document.getElementById('Grid').ej2_instances[0];
+            grid.hideScroll();
+        }
+    </script>
+
+}
+    @section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#popupJobId").click(function () {
+                alert("click 바인딩");
+            });
+
+            // Search Button click 시 조회
+            $("#Search").click(function () {
+                gridRefresh("PmsNsnManagement", "Grid");
+            });
+
+            $("#SearchString").keyup(function () {
+                // 키 입력시 마다 조회
+                //gridRefresh()
+
+                // Enter 입력 시 조회
+                if (window.event.keyCode == 13) {
+                    gridRefresh("PmsNsnManagement", "Grid");
+                }
+            });
+
+            $("#StartDate").keyup(function () {
+                // Enter 입력 시 조회
+                if (window.event.keyCode == 13) {
+                    gridRefresh("PmsNsnManagement", "Grid");
+                }
+            });
+
+            $("#EndDate").keyup(function () {
+                // Enter 입력 시 조회
+                if (window.event.keyCode == 13) {
+                    gridRefresh("PmsNsnManagement", "Grid");
+                }
+            });
+        });
+    </script>
+}
